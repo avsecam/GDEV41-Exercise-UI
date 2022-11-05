@@ -63,6 +63,7 @@ struct UIContainer : public UIComponent {
 struct Button : public UIComponent {
   // Text displayed by the button
   std::string text;
+	bool interactable = true;
   void (*functionOnClick)();
 
   // Draw
@@ -76,7 +77,7 @@ struct Button : public UIComponent {
   // the event
   bool HandleClick(Vector2 clickPosition) override {
     // Check if the mouse click position is within our bounds
-    if (CheckCollisionPointRec(clickPosition, bounds)) {
+    if (CheckCollisionPointRec(clickPosition, bounds) && interactable) {
       functionOnClick();
       return true;
     }
@@ -88,13 +89,15 @@ struct Button : public UIComponent {
 // Checkbox widget
 struct Checkbox : public UIComponent {
   std::string text;
+	std::string textOn;
+	std::string textOff;
   bool isChecked = false;
 
   void Draw() override {
 		Color color = (isChecked) ? BLUE : RED;
 		DrawRectangleRec(bounds, color);
 		if (hasBeenInteractedWith) {
-			std::string newText = (isChecked) ? "Checkbox ON" : "Checkbox OFF";
+			std::string newText = (isChecked) ? textOn : textOff;
 			DrawText(newText.c_str(), bounds.x, bounds.y, 14, BLACK);
 		} else {
 			DrawText(text.c_str(), bounds.x, bounds.y, 14, BLACK);
@@ -156,9 +159,11 @@ struct UILibrary {
   void Draw() { rootContainer.Draw(); }
 };
 
-void sampleFunctionOnClick1() { std::cout << "sample 1\n"; }
+void sampleFunctionOnClick1() { SetWindowSize(800, 600); }
 
-void sampleFunctionOnClick2() { std::cout << "sample 2\n"; }
+void sampleFunctionOnClick2() { SetWindowSize(1000, 600); }
+
+void sampleFunctionOnClick3() { SetWindowSize(1200, 600); }
 
 int main() {
   int windowWidth = 800, windowHeight = 600;
@@ -169,29 +174,48 @@ int main() {
   uiLibrary.rootContainer.bounds = {10, 10, 600, 500};
 
   Button button;
-  button.text = "Hello!";
+  button.text = "800 x 600";
   button.bounds = {120, 10, 80, 40};
   button.functionOnClick = sampleFunctionOnClick1;
   uiLibrary.rootContainer.AddChild(&button);
 
   Button button2;
-  button2.text = "Hi!";
+  button2.text = "1000 x 600";
   button2.bounds = {210, 10, 80, 40};
   button2.functionOnClick = sampleFunctionOnClick2;
   uiLibrary.rootContainer.AddChild(&button2);
+	
+  Button button3;
+  button3.text = "1200 x 600";
+  button3.bounds = {300, 10, 80, 40};
+  button3.functionOnClick = sampleFunctionOnClick3;
+  uiLibrary.rootContainer.AddChild(&button3);
 
   Label label;
-  label.text = "This is a label";
+  label.text = "Resolution";
   label.bounds = {10, 20, 100, 40};
   uiLibrary.rootContainer.AddChild(&label);
 
+	// If checkbox is on, window is resizable.
 	Checkbox checkbox;
-	checkbox.text = "I am a checkbox :o";
+	checkbox.text = "Lock\nresolution?";
 	checkbox.bounds = {10, 60, 100, 40};
+	checkbox.textOn = "Resolution\nresizable";
+	checkbox.textOff = "Resolution\nlocked";
 	uiLibrary.rootContainer.AddChild(&checkbox);
 
   while (!WindowShouldClose()) {
     uiLibrary.Update();
+
+		if (checkbox.isChecked) {
+			button.interactable = true;
+			button2.interactable = true;
+			button3.interactable = true;
+		} else {
+			button.interactable = false;
+			button2.interactable = false;
+			button3.interactable = false;
+		}
 
     ClearBackground(WHITE);
     BeginDrawing();
