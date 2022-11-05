@@ -44,9 +44,9 @@ struct UiLibrary {
 
     // If we are currently the hot widget
     if (id == hot) {
-			if (id != active) {
-				bgColor = GREEN;
-			}
+      if (id != active) {
+        bgColor = GREEN;
+      }
       // If the user pressed the left mouse button, that means the user started
       // interacting with this widget, so we set this widget as active
       if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
@@ -75,6 +75,54 @@ struct UiLibrary {
 
     return result;
   }
+
+	void Label(const std::string& text, const Rectangle& bounds) {
+		DrawText(text.c_str(), bounds.x, bounds.y, 14, PURPLE);
+	}
+
+  bool Checkbox(int id, const bool& isChecked, const std::string& textOn, const std::string& textOff, const Rectangle& bounds) {
+		bool result = isChecked;
+
+		Color bgColorOff = ORANGE;
+    Color bgColorOn = PINK;
+
+    Color bgColor = (result) ? bgColorOn : bgColorOff;
+    Color color = BLACK;
+
+    if (id == active) {
+      color = SKYBLUE;
+      bgColor = DARKGREEN;
+      if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+        if (id == hot) {
+          result = !isChecked;
+          bgColor = (result) ? bgColorOn : bgColorOff;
+        }
+
+        active = -1;
+      }
+    }
+
+    if (id == hot) {
+      if (id != active) {
+        bgColor = GREEN;
+      }
+      if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        active = id;
+      }
+    }
+
+    if (CheckCollisionPointRec(GetMousePosition(), bounds)) {
+      hot = id;
+    } else if (hot == id) {
+      hot = -1;
+      bgColor = (isChecked) ? bgColorOn : bgColorOff;
+    }
+
+    DrawRectangleRec(bounds, bgColor);
+    DrawText((isChecked) ? textOn.c_str() : textOff.c_str(), bounds.x, bounds.y, 14, color);
+
+    return result;
+  }
 };
 
 int main() {
@@ -84,15 +132,23 @@ int main() {
 
   UiLibrary uiLibrary;
 
+	bool canResize = false;
+
   while (!WindowShouldClose()) {
     ClearBackground(WHITE);
     BeginDrawing();
-    if (uiLibrary.Button(0, "Hello!", {10, 10, 80, 40})) {
-      std::cout << "Hello!" << std::endl;
+		canResize = uiLibrary.Checkbox(10, canResize, "Resolution resizable.", "Resolution locked.", {10, 60, 80, 40});
+
+    if (uiLibrary.Button(0, "800x600", {10, 10, 80, 40}) && canResize) {
+			SetWindowSize(800, 600);
     }
-    if (uiLibrary.Button(1, "Hi!", {100, 10, 80, 40})) {
-      std::cout << "Hi!" << std::endl;
+    if (uiLibrary.Button(1, "1000x600", {100, 10, 80, 40}) && canResize) {
+			SetWindowSize(1000, 600);
     }
+    if (uiLibrary.Button(2, "1200x600", {190, 10, 80, 40}) && canResize) {
+			SetWindowSize(1200, 600);
+    }
+
     EndDrawing();
   }
 
