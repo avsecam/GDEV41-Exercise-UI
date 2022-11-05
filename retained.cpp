@@ -200,14 +200,14 @@ int main() {
 	Checkbox checkbox;
 	checkbox.text = "Lock\nresolution?";
 	checkbox.bounds = {10, 60, 100, 40};
-	checkbox.textOn = "Resolution\nresizable";
-	checkbox.textOff = "Resolution\nlocked";
+	checkbox.textOn = "Resolution\nlocked";
+	checkbox.textOff = "Resolution\nresizable";
 	uiLibrary.rootContainer.AddChild(&checkbox);
 
   while (!WindowShouldClose()) {
     uiLibrary.Update();
 
-		if (checkbox.isChecked) {
+		if (!checkbox.isChecked) {
 			button.interactable = true;
 			button2.interactable = true;
 			button3.interactable = true;

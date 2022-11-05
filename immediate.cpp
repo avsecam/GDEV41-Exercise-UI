@@ -132,20 +132,20 @@ int main() {
 
   UiLibrary uiLibrary;
 
-	bool canResize = false;
+	bool resolutionLocked = false;
 
   while (!WindowShouldClose()) {
     ClearBackground(WHITE);
     BeginDrawing();
-		canResize = uiLibrary.Checkbox(10, canResize, "Resolution resizable.", "Resolution locked.", {10, 60, 80, 40});
+		resolutionLocked = uiLibrary.Checkbox(10, resolutionLocked, "Resolution locked.", "Resolution resizable.", {10, 60, 80, 40});
 
-    if (uiLibrary.Button(0, "800x600", {10, 10, 80, 40}) && canResize) {
+    if (uiLibrary.Button(0, "800x600", {10, 10, 80, 40}) && !resolutionLocked) {
 			SetWindowSize(800, 600);
     }
-    if (uiLibrary.Button(1, "1000x600", {100, 10, 80, 40}) && canResize) {
+    if (uiLibrary.Button(1, "1000x600", {100, 10, 80, 40}) && !resolutionLocked) {
 			SetWindowSize(1000, 600);
     }
-    if (uiLibrary.Button(2, "1200x600", {190, 10, 80, 40}) && canResize) {
+    if (uiLibrary.Button(2, "1200x600", {190, 10, 80, 40}) && !resolutionLocked) {
 			SetWindowSize(1200, 600);
     }
 
